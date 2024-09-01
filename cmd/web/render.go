@@ -19,7 +19,7 @@ type TemplateData struct {
 // defaultData is used to for some default data
 func (a *application) defaultData(td *TemplateData, r *http.Request) *TemplateData {
 	td.URL = a.server.url
-	
+
 	return td
 }
 
