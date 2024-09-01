@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// listenAndServer function runs the server
 func (a *application) listenAndServer() error {
 	host := fmt.Sprintf("%s:%s", a.server.host, a.server.port)
 	srv := http.Server{

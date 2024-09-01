@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// routes function returns all the routes
 func (a *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(middleware.RequestID)
