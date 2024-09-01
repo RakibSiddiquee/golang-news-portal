@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/alexedwards/scs/v2"
 	"log"
 	"os"
 )
@@ -14,6 +15,7 @@ type application struct {
 	errLog  *log.Logger
 	infoLog *log.Logger
 	view    *jet.Set
+	session *scs.SessionManager
 }
 
 type server struct {
