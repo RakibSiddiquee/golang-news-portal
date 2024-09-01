@@ -15,7 +15,7 @@ type application struct {
 
 type server struct {
 	host string
-	post string
+	port string
 	url  string
 }
 
