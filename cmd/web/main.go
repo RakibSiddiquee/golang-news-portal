@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
 	"github.com/alexedwards/scs/v2"
@@ -34,6 +35,12 @@ func main() {
 		url:  "http://localhost:8090",
 	}
 
+	db, err := openDB("")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	app := &application{
 		server:  server,
 		appName: "Golang News Portal",
@@ -62,4 +69,16 @@ func main() {
 	}
 
 	fmt.Println("Hello world!")
+}
+
+// openDB is used to open database
+func openDB(dns string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dns)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
