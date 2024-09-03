@@ -2,14 +2,18 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
+	"github.com/upper/db/v4"
+	"github.com/upper/db/v4/adapter/postgresql"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 type application struct {
@@ -29,18 +33,33 @@ type server struct {
 }
 
 func main() {
+	// Init server
 	server := server{
 		host: "localhost",
 		port: "8090",
 		url:  "http://localhost:8090",
 	}
 
-	db, err := openDB("")
+	// Open database connection
+	db2, err := openDB("postgres://postgres:postgres@localhost/golang_news_portal?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer db2.Close()
 
+	// Init upper/db
+	upper, err := postgresql.New(db2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(upper db.Session) {
+		err := upper.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(upper)
+
+	// Init application
 	app := &application{
 		server:  server,
 		appName: "Golang News Portal",
@@ -63,17 +82,16 @@ func main() {
 	app.session.Cookie.Name = strings.ReplaceAll(app.appName, " ", "-")
 	app.session.Cookie.Domain = app.server.host
 	app.session.Cookie.SameSite = http.SameSiteStrictMode
+	app.session.Store = postgresstore.New(db2)
 
 	if err := app.listenAndServer(); err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("Hello world!")
 }
 
 // openDB is used to open database
-func openDB(dns string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dns)
+func openDB(dsn string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}
