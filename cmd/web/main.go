@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/RakibSiddiquee/golang-news-portal/models"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/upper/db/v4"
@@ -24,6 +25,7 @@ type application struct {
 	infoLog *log.Logger
 	view    *jet.Set
 	session *scs.SessionManager
+	Models  models.Models
 }
 
 type server struct {
