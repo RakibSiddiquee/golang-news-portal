@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"flag"
+	"fmt"
 	"github.com/CloudyKit/jet/v6"
 	"github.com/RakibSiddiquee/golang-news-portal/models"
 	"github.com/alexedwards/scs/postgresstore"
@@ -35,6 +37,9 @@ type server struct {
 }
 
 func main() {
+	migrate := flag.Bool("migrate", false, "should migrate - drop all tables")
+	flag.Parse()
+
 	// Init server
 	server := server{
 		host: "localhost",
@@ -61,6 +66,16 @@ func main() {
 		}
 	}(upper)
 
+	// run migration
+	if *migrate {
+		fmt.Println("Running migrations...")
+		err = runMigrate(upper)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Migrations complete")
+	}
+
 	// Init application
 	app := &application{
 		server:  server,
@@ -68,6 +83,7 @@ func main() {
 		debug:   true,
 		infoLog: log.New(os.Stdout, "INFO\t", log.Ltime|log.Ldate|log.Lshortfile),
 		errLog:  log.New(os.Stdout, "ERROR\t", log.Ltime|log.Ldate|log.Llongfile),
+		Models:  models.New(upper),
 	}
 
 	// Init jet template
@@ -93,12 +109,24 @@ func main() {
 
 // openDB is used to open database
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
+	odb, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
 	}
-	if err = db.Ping(); err != nil {
+	if err = odb.Ping(); err != nil {
 		return nil, err
 	}
-	return db, nil
+	return odb, nil
+}
+
+// runMigrate is used to run migration files
+func runMigrate(db db.Session) error {
+	script, err := os.ReadFile("./migrations/tables.sql")
+	if err != nil {
+		return err
+	}
+
+	_, err = db.SQL().Exec(string(script))
+
+	return err
 }

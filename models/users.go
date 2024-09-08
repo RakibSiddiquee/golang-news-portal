@@ -1,0 +1,77 @@
+package models
+
+import (
+	"errors"
+	"github.com/upper/db/v4"
+	"golang.org/x/crypto/bcrypt"
+	"time"
+)
+
+const passwordCost = 12
+
+func (m UsersModel) Table() string {
+	return "users"
+}
+
+type UsersModel struct {
+	db db.Session
+}
+
+type User struct {
+	ID        int       `json:"id,omitempty"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password_hash"`
+	CreatedAt time.Time `json:"created_at"`
+	Activated bool      `json:"activated"`
+}
+
+func (m UsersModel) Get(id int) (*User, error) {
+	var u User
+	err := m.db.Collection(m.Table()).Find(db.Cond{"id": id}).One(&u)
+	if err != nil {
+		if errors.Is(err, db.ErrNoMoreRows) {
+			return nil, ErrNoMoreRows
+		}
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (m UsersModel) FindByEmail(email string) (*User, error) {
+	var u User
+	err := m.db.Collection(m.Table()).Find(db.Cond{"email": email}).One(&u)
+	if err != nil {
+		if errors.Is(err, db.ErrNoMoreRows) {
+			return nil, ErrNoMoreRows
+		}
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (m UsersModel) Insert(u *User) error {
+	newHash, err := bcrypt.GenerateFromPassword([]byte(u.Password), passwordCost)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(newHash)
+	u.CreatedAt = time.Now()
+	col := m.db.Collection(m.Table())
+	res, err := col.Insert(u)
+	if err != nil {
+		switch {
+		case errHasDuplicate(err, "users_email_key"):
+			return ErrDuplicateEmail
+		default:
+			return err
+		}
+	}
+
+	u.ID = convertUpperIDtoInt(res.ID())
+
+	return nil
+}
