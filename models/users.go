@@ -9,14 +9,6 @@ import (
 
 const passwordCost = 12
 
-func (m UsersModel) Table() string {
-	return "users"
-}
-
-type UsersModel struct {
-	db db.Session
-}
-
 type User struct {
 	ID        int       `json:"id,omitempty"`
 	Name      string    `json:"name"`
@@ -24,6 +16,14 @@ type User struct {
 	Password  string    `json:"password_hash"`
 	CreatedAt time.Time `json:"created_at"`
 	Activated bool      `json:"activated"`
+}
+
+func (m UsersModel) Table() string {
+	return "users"
+}
+
+type UsersModel struct {
+	db db.Session
 }
 
 func (m UsersModel) Get(id int) (*User, error) {
