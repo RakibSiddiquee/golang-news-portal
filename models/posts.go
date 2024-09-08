@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"github.com/upper/db/v4"
+	"strings"
 	"time"
 )
 
@@ -39,4 +40,29 @@ type Post struct {
 
 type PostsModel struct {
 	db db.Session
+}
+
+func (m PostsModel) Table() string {
+	return "posts"
+}
+
+func (m PostsModel) Get(id int) (*Post, error) {
+	var post Post
+
+	q := strings.Replace(queryTemplate, "#where#", "WHERE p.id = $1", 1)
+	q = strings.Replace(q, "#orderby#", "", 1)
+	q = strings.Replace(q, "#limit#", "", 1)
+
+	row, err := m.db.SQL().Query(q, id)
+	if err != nil {
+		return nil, err
+	}
+
+	iter := m.db.SQL().NewIterator(row)
+	err = iter.One(&post)
+	if err != nil {
+		return nil, err
+	}
+
+	return &post, nil
 }
