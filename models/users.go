@@ -75,3 +75,39 @@ func (m UsersModel) Insert(u *User) error {
 
 	return nil
 }
+
+func (u *User) ComparePassword(plainPassword string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainPassword))
+	if err != nil {
+		switch {
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			return false, nil
+		default:
+			return false, err
+		}
+	}
+
+	return true, nil
+}
+
+func (m UsersModel) Authenticate(email, password string) (*User, error) {
+	user, err := m.FindByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if !user.Activated {
+		return nil, ErrUserNotActive
+	}
+
+	match, err := user.ComparePassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	if !match {
+		return nil, ErrInvalidLogin
+	}
+
+	return user, nil
+}

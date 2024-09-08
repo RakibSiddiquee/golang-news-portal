@@ -10,6 +10,8 @@ import (
 var (
 	ErrNoMoreRows     = errors.New("no record found")
 	ErrDuplicateEmail = errors.New("email already exist")
+	ErrUserNotActive  = errors.New("the user is not active")
+	ErrInvalidLogin   = errors.New("invalid login")
 )
 
 type Models struct {
