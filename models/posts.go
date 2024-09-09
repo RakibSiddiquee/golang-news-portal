@@ -96,7 +96,24 @@ func (m PostsModel) GetAll(f Filter) ([]Post, Metadata, error) {
 	if len(posts) == 0 {
 		return nil, meta, errors.New("no record found")
 	}
-		
+
 	first := posts[0]
 	return posts, calculateMetadata(first.TotalRecords, f.Page, f.PageSize), nil
+}
+
+func (m PostsModel) Vote(postId, userId int) error {
+	col := m.db.Collection("votes")
+
+	_, err := col.Insert(map[string]int{
+		"post_id": postId,
+		"user_id": userId,
+	})
+
+	if err != nil {
+		if errHasDuplicate(err, "votes_pkey") {
+			return ErrDuplicateVotes
+		}
+		return err
+	}
+	return nil
 }
