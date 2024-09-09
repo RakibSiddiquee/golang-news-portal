@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/upper/db/v4"
 	"strings"
@@ -65,4 +66,37 @@ func (m PostsModel) Get(id int) (*Post, error) {
 	}
 
 	return &post, nil
+}
+
+func (m PostsModel) GetAll(f Filter) ([]Post, Metadata, error) {
+	var posts []Post
+	var rows *sql.Rows
+	var err error
+	meta := Metadata{}
+
+	q := f.applyTemplate(queryTemplate)
+
+	if len(f.Query) > 0 {
+		rows, err = m.db.SQL().Query(q, "%"+strings.ToLower(f.Query)+"%", f.limit(), f.offset())
+	} else {
+		rows, err = m.db.SQL().Query(q, f.limit(), f.offset())
+	}
+
+	if err != nil {
+		return nil, meta, err
+	}
+
+	iter := m.db.SQL().NewIterator(rows)
+	err = iter.All(&posts)
+
+	if err != nil {
+		return nil, meta, err
+	}
+
+	if len(posts) == 0 {
+		return nil, meta, errors.New("no record found")
+	}
+		
+	first := posts[0]
+	return posts, calculateMetadata(first.TotalRecords, f.Page, f.PageSize), nil
 }
