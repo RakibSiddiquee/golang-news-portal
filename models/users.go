@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/upper/db/v4"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -10,12 +11,12 @@ import (
 const passwordCost = 12
 
 type User struct {
-	ID        int       `json:"id,omitempty"`
-	Name      string    `json:"name" db:"name"`
-	Email     string    `json:"email" db:"email"`
-	Password  string    `json:"password_hash" db:"password_hash"`
-	CreatedAt time.Time `json:"created_at"`
-	Activated bool      `json:"activated"`
+	ID        int       `db:"id,omitempty"`
+	Name      string    `db:"name"`
+	Email     string    `db:"email"`
+	Password  string    `db:"password_hash"`
+	CreatedAt time.Time `db:"created_at"`
+	Activated bool      `db:"activated"`
 }
 
 func (m UsersModel) Table() string {
@@ -61,6 +62,7 @@ func (m UsersModel) Insert(u *User) error {
 	u.Password = string(newHash)
 	u.CreatedAt = time.Now()
 	col := m.db.Collection(m.Table())
+	fmt.Println(u.Email)
 
 	res, err := col.Insert(u)
 	if err != nil {

@@ -30,15 +30,15 @@ var (
 )
 
 type Post struct {
-	ID           int       `json:"id,omitempty"`
-	Title        string    `json:"title" db:"title"`
-	Url          string    `json:"url" db:"url"`
-	CreateAt     time.Time `json:"create_at" db:"created_at"`
-	UserID       int       `json:"user_id" db:"user_id"`
-	Votes        int       `json:"votes,omitempty"`
-	UserName     string    `json:"user_name,omitempty"`
-	CommentCount int       `json:"comment_count,omitempty"`
-	TotalRecords int       `json:"total_records,omitempty"`
+	ID           int       `db:"id,omitempty"`
+	Title        string    `db:"title"`
+	Url          string    `db:"url"`
+	CreateAt     time.Time `db:"create_at"`
+	UserID       int       `db:"user_id"`
+	Votes        int       `db:"votes,omitempty"`
+	UserName     string    `db:"user_name,omitempty"`
+	CommentCount int       `db:"comment_count,omitempty"`
+	TotalRecords int       `db:"total_records,omitempty"`
 }
 
 type PostsModel struct {
