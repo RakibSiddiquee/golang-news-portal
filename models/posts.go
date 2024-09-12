@@ -31,10 +31,10 @@ var (
 
 type Post struct {
 	ID           int       `json:"id,omitempty"`
-	Title        string    `json:"title"`
-	Url          string    `json:"url"`
-	CreateAt     time.Time `json:"create_at"`
-	UserID       int       `json:"user_id"`
+	Title        string    `json:"title" db:"title"`
+	Url          string    `json:"url" db:"url"`
+	CreateAt     time.Time `json:"create_at" db:"created_at"`
+	UserID       int       `json:"user_id" db:"user_id"`
 	Votes        int       `json:"votes,omitempty"`
 	UserName     string    `json:"user_name,omitempty"`
 	CommentCount int       `json:"comment_count,omitempty"`
@@ -130,4 +130,22 @@ func (p *Post) Host() string {
 		return ""
 	}
 	return ur.Host
+}
+
+func (m PostsModel) Insert(title, url string, userId int) (*Post, error) {
+	post := Post{
+		CreateAt: time.Now(),
+		Title:    title,
+		Url:      url,
+		UserID:   userId,
+	}
+
+	col := m.db.Collection(m.Table())
+	res, err := col.Insert(post)
+	if err != nil {
+		return nil, err
+	}
+
+	post.ID = convertUpperIDtoInt(res.ID())
+	return &post, nil
 }

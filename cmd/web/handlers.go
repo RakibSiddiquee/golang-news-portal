@@ -9,6 +9,22 @@ import (
 )
 
 func (a *application) homeHandler(w http.ResponseWriter, r *http.Request) {
+	//u := models.User{
+	//	Email:    "ad@example.com",
+	//	Password: "password",
+	//	Name:     "Rakib",
+	//}
+	//err := a.Models.Users.Insert(&u)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//a.Models.Posts.Insert("Test Title", "https://example.com", u.ID)
+	//a.Models.Posts.Insert("Test Title 2", "https://example.com", u.ID)
+	//a.Models.Posts.Insert("Test Title 3", "https://example.com", u.ID)
+	//a.Models.Posts.Insert("Test Title 4", "https://example.com", u.ID)
+	//a.Models.Posts.Insert("Test Title 5", "https://example.com", u.ID)
+
 	err := r.ParseForm()
 	if err != nil {
 		a.serverError(w, err)

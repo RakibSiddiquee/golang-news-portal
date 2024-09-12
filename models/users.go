@@ -11,9 +11,9 @@ const passwordCost = 12
 
 type User struct {
 	ID        int       `json:"id,omitempty"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password_hash"`
+	Name      string    `json:"name" db:"name"`
+	Email     string    `json:"email" db:"email"`
+	Password  string    `json:"password_hash" db:"password_hash"`
 	CreatedAt time.Time `json:"created_at"`
 	Activated bool      `json:"activated"`
 }
@@ -61,6 +61,7 @@ func (m UsersModel) Insert(u *User) error {
 	u.Password = string(newHash)
 	u.CreatedAt = time.Now()
 	col := m.db.Collection(m.Table())
+
 	res, err := col.Insert(u)
 	if err != nil {
 		switch {
