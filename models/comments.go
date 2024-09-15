@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/golang-module/carbon/v2"
 	"github.com/upper/db/v4"
 	"time"
 )
@@ -51,4 +52,8 @@ func (m CommentsModel) Insert(body string, postId, userId int) error {
 	}
 
 	return nil
+}
+
+func (c *Comment) DateHuman() string {
+	return carbon.CreateFromStdTime(c.CreatedAt).DiffForHumans()
 }
