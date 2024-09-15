@@ -38,3 +38,17 @@ func (m CommentsModel) GetForPost(postId int) ([]Comment, error) {
 
 	return comments, nil
 }
+
+func (m CommentsModel) Insert(body string, postId, userId int) error {
+	_, err := m.db.Collection(m.Table()).Insert(map[string]interface{}{
+		"body":    body,
+		"user_id": userId,
+		"post_id": postId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
