@@ -70,7 +70,7 @@ func (a *application) commentHandler(w http.ResponseWriter, r *http.Request) {
 
 	postId, err := strconv.Atoi(chi.URLParam(r, "postId"))
 	if err != nil {
-		a.clientError(w, http.StatusNotFound)
+		a.clientError(w, http.StatusBadRequest)
 		return
 	}
 
