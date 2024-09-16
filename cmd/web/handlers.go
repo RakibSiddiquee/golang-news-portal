@@ -80,7 +80,14 @@ func (a *application) commentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	comments, err := a.Models.Comments.GetForPost(post.ID)
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+
 	vars.Set("post", post)
+	vars.Set("comments", comments)
 
 	err = a.render(w, r, "comments", vars)
 	if err != nil {
