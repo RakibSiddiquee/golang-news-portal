@@ -105,3 +105,14 @@ func (a *application) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (a *application) signupHandler(w http.ResponseWriter, r *http.Request) {
+	vars := make(jet.VarMap)
+	vars.Set("form", forms.New(r.PostForm))
+
+	err := a.render(w, r, "signup", vars)
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+}
