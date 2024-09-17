@@ -23,6 +23,7 @@ func (a *application) routes() http.Handler {
 	mux.Get("/comments/{postId}", a.commentHandler)
 
 	mux.Get("/login", a.loginHandler)
+	mux.Post("/login", a.loginPostHandler)
 	mux.Get("/signup", a.signupHandler)
 
 	fileServer := http.FileServer(http.Dir("./public"))

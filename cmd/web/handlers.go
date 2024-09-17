@@ -116,3 +116,26 @@ func (a *application) signupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (a *application) loginPostHandler(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1024*2)
+	err := r.ParseForm()
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+
+	form := forms.New(r.PostForm)
+	form.Email("email")
+	form.MinLength("password", 3)
+
+	if !form.Valid() {
+		vars := make(jet.VarMap)
+		vars.Set("errors", form.Errors)
+		err := a.render(w, r, "login", vars)
+		if err != nil {
+			a.serverError(w, err)
+			return
+		}
+	}
+}
