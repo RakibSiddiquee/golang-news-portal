@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/RakibSiddiquee/golang-news-portal/forms"
 	"github.com/RakibSiddiquee/golang-news-portal/models"
 	"github.com/go-chi/chi/v5"
 	"log"
@@ -57,6 +58,7 @@ func (a *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 	vars.Set("meta", meta)
 	vars.Set("nextUrl", nextUrl)
 	vars.Set("prevUrl", prevUrl)
+	vars.Set("form", forms.New(r.Form))
 
 	err = a.render(w, r, "index", vars)
 
