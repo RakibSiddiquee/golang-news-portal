@@ -19,6 +19,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	sessionKeyUserId   = "userId"
+	sessionKeyUserName = "userName"
+)
+
 type application struct {
 	appName string
 	server  server
