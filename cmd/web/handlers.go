@@ -97,3 +97,11 @@ func (a *application) commentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (a *application) loginHandler(w http.ResponseWriter, r *http.Request) {
+	err := a.render(w, r, "login", nil)
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+}
