@@ -12,6 +12,7 @@ func (a *application) routes() http.Handler {
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.RealIP)
 	mux.Use(middleware.Recoverer)
+	mux.Use(a.CSRFTokenRequired)
 	mux.Use(a.LoadSession)
 
 	if a.debug {
