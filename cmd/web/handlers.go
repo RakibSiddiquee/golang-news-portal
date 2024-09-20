@@ -161,3 +161,51 @@ func (a *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
 }
+
+func (a *application) signupPostHandler(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1024*2)
+
+	err := r.ParseForm()
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+
+	vars := make(jet.VarMap)
+
+	form := forms.New(r.PostForm)
+	vars.Set("form", form)
+
+	form.Required("name", "email", "password").
+		Email("email")
+
+	if !form.Valid() {
+		vars.Set("errors", form.Errors)
+		err := a.render(w, r, "signup", vars)
+		if err != nil {
+			a.serverError(w, err)
+		}
+		return
+	}
+
+	user := models.User{
+		Name:      form.Get("name"),
+		Email:     form.Get("email"),
+		Password:  form.Get("password"),
+		Activated: true, // move to database/config
+	}
+
+	err = a.Models.Users.Insert(&user)
+	if err != nil {
+		form.Fail("signup", "failed to create account "+err.Error())
+		vars.Set("errors", form.Errors)
+		err := a.render(w, r, "signup", vars)
+		if err != nil {
+			a.serverError(w, err)
+		}
+		return
+	}
+
+	a.session.Put(r.Context(), "flash", "account created!")
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
