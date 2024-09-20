@@ -231,3 +231,13 @@ func (a *application) voteHandler(w http.ResponseWriter, r *http.Request) {
 	a.session.Put(r.Context(), "flash", "Voted successfully!")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func (a *application) submitHandler(w http.ResponseWriter, r *http.Request) {
+	vars := make(jet.VarMap)
+	vars.Set("form", forms.New(r.PostForm))
+	err := a.render(w, r, "submit", vars)
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+}
