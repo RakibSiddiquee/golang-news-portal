@@ -26,7 +26,7 @@ func (a *application) defaultData(td *TemplateData, r *http.Request) *TemplateDa
 			td.AuthUser = a.session.GetString(r.Context(), sessionKeyUserName)
 		}
 
-		td.Flash = a.session.GetString(r.Context(), "flash")
+		td.Flash = a.session.PopString(r.Context(), "flash")
 	}
 
 	return td

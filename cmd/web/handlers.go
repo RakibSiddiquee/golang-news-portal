@@ -151,3 +151,13 @@ func (a *application) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	a.session.Put(r.Context(), sessionKeyUserName, user.Name)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func (a *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	a.session.Remove(r.Context(), sessionKeyUserId)
+	a.session.Remove(r.Context(), sessionKeyUserName)
+	a.session.Destroy(r.Context())
+	a.session.RenewToken(r.Context())
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+	return
+}

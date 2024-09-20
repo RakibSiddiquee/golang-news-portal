@@ -25,6 +25,7 @@ func (a *application) routes() http.Handler {
 	mux.Get("/login", a.loginHandler)
 	mux.Post("/login", a.loginPostHandler)
 	mux.Get("/signup", a.signupHandler)
+	mux.Get("/logout", a.authRequired(a.logoutHandler))
 
 	fileServer := http.FileServer(http.Dir("./public"))
 	mux.Handle("/public/*", http.StripPrefix("/public", fileServer))
