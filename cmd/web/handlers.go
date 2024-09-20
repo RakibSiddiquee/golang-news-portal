@@ -138,4 +138,16 @@ func (a *application) loginPostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	user, err := a.Models.Users.Authenticate(form.Get("email"), form.Get("password"))
+	if err != nil {
+		a.session.Put(r.Context(), "flash", "Login error: "+err.Error())
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	a.session.RenewToken(r.Context())
+	a.session.Put(r.Context(), sessionKeyUserId, user.ID)
+	a.session.Put(r.Context(), sessionKeyUserName, user.Name)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
