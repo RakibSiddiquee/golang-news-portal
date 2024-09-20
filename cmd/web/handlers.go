@@ -209,3 +209,25 @@ func (a *application) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 	a.session.Put(r.Context(), "flash", "account created!")
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
+
+func (a *application) voteHandler(w http.ResponseWriter, r *http.Request) {
+	id := a.readIntDefault(r, "id", 0)
+
+	post, err := a.Models.Posts.Get(id)
+	if err != nil {
+		a.session.Put(r.Context(), "flash", "Error: "+err.Error())
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	userId := a.session.GetInt(r.Context(), sessionKeyUserId)
+	err = a.Models.Posts.Vote(post.ID, userId)
+	if err != nil {
+		a.session.Put(r.Context(), "flash", "Error: "+err.Error())
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	a.session.Put(r.Context(), "flash", "Voted successfully!")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
