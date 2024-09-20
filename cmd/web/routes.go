@@ -30,6 +30,7 @@ func (a *application) routes() http.Handler {
 
 	mux.Get("/vote", a.authRequired(a.voteHandler))
 	mux.Get("/submit", a.authRequired(a.submitHandler))
+	mux.Post("/submit", a.authRequired(a.submitPostHandler))
 
 	fileServer := http.FileServer(http.Dir("./public"))
 	mux.Handle("/public/*", http.StripPrefix("/public", fileServer))

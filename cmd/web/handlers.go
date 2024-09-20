@@ -241,3 +241,45 @@ func (a *application) submitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (a *application) submitPostHandler(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1024*2)
+
+	err := r.ParseForm()
+	if err != nil {
+		a.serverError(w, err)
+		return
+	}
+
+	userId := a.session.GetInt(r.Context(), sessionKeyUserId)
+	vars := make(jet.VarMap)
+	form := forms.New(r.PostForm)
+
+	form.Required("title", "url").Url("url").
+		MaxLength("title", 255).MaxLength("url", 255)
+
+	vars.Set("form", form)
+
+	if !form.Valid() {
+		vars.Set("errors", form.Errors)
+		err := a.render(w, r, "submit", vars)
+		if err != nil {
+			a.serverError(w, err)
+		}
+		return
+	}
+
+	_, err = a.Models.Posts.Insert(form.Get("title"), form.Get("url"), userId)
+	if err != nil {
+		form.Fail("form", "failed due to "+err.Error())
+		vars.Set("errors", form.Errors)
+		err := a.render(w, r, "submit", vars)
+		if err != nil {
+			a.serverError(w, err)
+		}
+		return
+	}
+
+	a.session.Put(r.Context(), "flash", "post submitted successfully!")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

@@ -33,7 +33,7 @@ type Post struct {
 	ID           int       `db:"id,omitempty"`
 	Title        string    `db:"title"`
 	Url          string    `db:"url"`
-	CreateAt     time.Time `db:"create_at"`
+	CreatedAt    time.Time `db:"created_at"`
 	UserID       int       `db:"user_id"`
 	Votes        int       `db:"votes,omitempty"`
 	UserName     string    `db:"user_name,omitempty"`
@@ -121,7 +121,7 @@ func (m PostsModel) Vote(postId, userId int) error {
 }
 
 func (p *Post) DateHuman() string {
-	return carbon.CreateFromStdTime(p.CreateAt).DiffForHumans()
+	return carbon.CreateFromStdTime(p.CreatedAt).DiffForHumans()
 }
 
 func (p *Post) Host() string {
@@ -134,10 +134,10 @@ func (p *Post) Host() string {
 
 func (m PostsModel) Insert(title, url string, userId int) (*Post, error) {
 	post := Post{
-		CreateAt: time.Now(),
-		Title:    title,
-		Url:      url,
-		UserID:   userId,
+		CreatedAt: time.Now(),
+		Title:     title,
+		Url:       url,
+		UserID:    userId,
 	}
 
 	col := m.db.Collection(m.Table())
