@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/justinas/nosurf"
 	"net/http"
 )
 
@@ -29,6 +30,7 @@ func (a *application) defaultData(td *TemplateData, r *http.Request) *TemplateDa
 		td.Flash = a.session.PopString(r.Context(), "flash")
 	}
 
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
