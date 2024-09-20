@@ -21,6 +21,7 @@ func (a *application) routes() http.Handler {
 	// Register routes
 	mux.Get("/", a.homeHandler)
 	mux.Get("/comments/{postId}", a.commentHandler)
+	mux.Post("/comments/{postId}", a.commentPostHandler)
 
 	mux.Get("/login", a.loginHandler)
 	mux.Post("/login", a.loginPostHandler)
