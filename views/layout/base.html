@@ -6,7 +6,7 @@
     <div>
         <div class="container header__top">
             <a href="/" class="header__logo">
-                <img src="/public/assests/logo.svg" alt="" />
+                <img src="/public/assets/logo.svg" alt="" />
                 <h1>Hacker News Clone</h1>
             </a>
             <form class="header__search" method="get" id="search-form" action="/" name="search-form">
@@ -17,7 +17,7 @@
                 {{if .IsAuthenticated}}
                 <a href="/submit" class="submit">Submit</a>
                 <div>
-                    <img src="/public/assests/user-white.svg" alt="" />
+                    <img src="/public/assets/user-white.svg" alt="" />
                     <a href="/logout">{{.AuthUser}} (Logout)</a>
                 </div>
                 {{else}}
